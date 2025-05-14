@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>José Eduardo Maldonado Pablo</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+    canvas {
+      display: block;
+    }
+    .text-overlay {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+    .text-overlay h1 {
+      margin: 0;
+      font-size: 2em;
+      color: #00ffcc;
+    }
+    .text-overlay p {
+      margin: 5px 0 20px;
+      font-size: 1.2em;
+      color: #ffffffcc;
+    }
+    .quiz {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: left;
+      color: #00ffcc;
+      font-size: 16px;
+      z-index: 10;
+      width: 80%;
+      max-width: 600px;
+    }
+    .quiz label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .quiz input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: none;
+    }
+    .quiz button {
+      padding: 10px 20px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 4px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 15px;
+      color: #00ffcc;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="text-overlay">
+  <h1>José Eduardo Maldonado Pablo</h1>
+  <p>A kind and thoughtful human being 💙</p>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="quiz">
+  <label>What is José's favorite food?
+    <input type="text" id="food" placeholder="Type your answer...">
+  </label>
+  <label>What is his favorite color?
+    <input type="text" id="color" placeholder="Type your answer...">
+  </label>
+  <label>Who is his favorite living being?
+    <input type="text" id="being" placeholder="Type your answer...">
+  </label>
+  <label>What city does he love the most?
+    <input type="text" id="city" placeholder="Type your answer...">
+  </label>
+  <label>What animal does he like?
+    <input type="text" id="animal" placeholder="Type your answer...">
+  </label>
+  <button onclick="checkAnswers()">Check Answers</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+  // Particle background
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const message = 'José Eduardo Maldonado Pablo';
+  const textCanvas = document.createElement('canvas');
+  const textCtx = textCanvas.getContext('2d');
+  textCanvas.width = width;
+  textCanvas.height = height;
+  textCtx.font = 'bold 60px Arial';
+  textCtx.fillStyle = '#ffffff';
+  textCtx.textAlign = 'center';
+  textCtx.fillText(message, width / 2, height / 2);
+
+  const imageData = textCtx.getImageData(0, 0, width, height).data;
+
+  for (let y = 0; y < height; y += 6) {
+    for (let x = 0; x < width; x += 6) {
+      const index = (y * width + x) * 4;
+      const alpha = imageData[index + 3];
+      if (alpha > 128) {
+        particles.push({ x, y, dx: Math.random() * 2 - 1, dy: Math.random() * 2 - 1 });
+      }
+    }
+  }
+
+  function animate() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = '#00ffcc';
+    particles.forEach(p => {
+      p.x += p.dx;
+      p.y += p.dy;
+
+      if (p.x < 0 || p.x > width || p.y < 0 || p.y > height) {
+        p.dx *= -1;
+        p.dy *= -1;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // Quiz functionality
+  function checkAnswers() {
+    const answers = {
+      food: "spaghetti",
+      color: "green",
+      being: "pelusa",
+      city: "chicago",
+      animal: "cat"
+    };
+
+    let score = 0;
+
+    if (document.getElementById("food").value.toLowerCase().includes(answers.food)) score++;
+    if (document.getElementById("color").value.toLowerCase().includes(answers.color)) score++;
+    if (document.getElementById("being").value.toLowerCase().includes(answers.being)) score++;
+    if (document.getElementById("city").value.toLowerCase().includes(answers.city)) score++;
+    if (document.getElementById("animal").value.toLowerCase().includes(answers.animal)) score++;
+
+    const result = document.getElementById("result");
+    if (score === 5) {
+      result.textContent = "🎉 You really know José Eduardo Maldonado Pablo well!";
+    } else {
+      result.textContent = `You got ${score}/5 right. Keep learning more about José! 😉`;
+    }
+  }
+</script>
+
+</body>
+</html>
